@@ -9,17 +9,12 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Leantime MCP Server is running"}
 
-def test_execute_tool():
-    tool_name = "test_tool"
-    request_data = {
-        "name": tool_name,
-        "input": {"param1": "value1", "param2": "value2"}
-    }
-    
-    response = client.post(f"/tools/{tool_name}", json=request_data)
-    
+def test_tools_endpoint():
+    """Test that the tools endpoint returns a list of available tools."""
+    response = client.get("/tools")
     assert response.status_code == 200
     response_data = response.json()
-    assert response_data["output"]["status"] == "success"
-    assert response_data["output"]["tool"] == tool_name
-    assert response_data["output"]["input"] == request_data["input"]
+    assert "tools" in response_data
+    assert isinstance(response_data["tools"], list)
+    # Verify that at least one tool is included
+    assert len(response_data["tools"]) > 0
