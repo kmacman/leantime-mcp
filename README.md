@@ -44,92 +44,21 @@ To use this server with Claude, add the following to your Claude MCP configurati
 
 ```json
 {
-  "tools": [
-    {
-      "name": "leantime_list_projects",
-      "description": "Lists all available projects in Leantime",
-      "provider": {
-        "type": "http",
-        "url": "http://localhost:8000/tools/list_projects",
-        "method": "POST",
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "bodyTemplate": {
-          "name": "list_projects",
-          "input": "{{{parameters}}}"
-        },
-        "responseSchema": {
-          "type": "object",
-          "properties": {
-            "output": {
-              "type": "object",
-              "properties": {
-                "projects": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": { "type": "integer" },
-                      "name": { "type": "string" },
-                      "description": { "type": ["string", "null"] }
-                    }
-                  }
-                }
-              }
-            }
-          }
+    "mcpServers": {
+        "leantime": {
+            "command": "python",
+            "args": [
+                "run.py"
+            ],
+            "cwd": "/path/to/leantime-mcp"
         }
-      },
-      "parameters": {
-        "type": "object",
-        "properties": {},
-        "required": []
-      }
-    },
-    {
-      "name": "leantime_create_task",
-      "description": "Creates a new task in Leantime",
-      "provider": {
-        "type": "http",
-        "url": "http://localhost:8000/tools/create_task",
-        "method": "POST",
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "bodyTemplate": {
-          "name": "create_task",
-          "input": "{{{parameters}}}"
-        }
-      },
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Title of the task"
-          },
-          "projectId": {
-            "type": "integer",
-            "description": "ID of the project"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the task"
-          },
-          "status": {
-            "type": "string",
-            "description": "Status of the task"
-          }
-        },
-        "required": ["title", "projectId"]
-      }
     }
-  ]
 }
 ```
 
-You can add more tools following the same pattern for any of the available tools listed below. Make sure to update the URL if you're not running the server on the default port or if it's on a different machine.
+Make sure to replace `/path/to/leantime-mcp` with the actual path to where you've installed this server. On Windows, you would use a path format like `C:\\Users\\username\\leantime-mcp` or use forward slashes: `C:/Users/username/leantime-mcp`.
+
+Once the MCP server is properly configured, Claude will automatically have access to all the Leantime tools provided by this server.
 
 ## API Endpoints
 
