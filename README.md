@@ -8,6 +8,7 @@ A Python-based MCP (Model-Control-Provider) server for Leantime integration, pro
 - Tools for managing projects, tasks, users, and timesheets
 - Batch execution support for multiple tools
 - FastAPI-based with async request handling
+- Compatible with Claude's MCP protocol
 
 ## Setup
 
@@ -36,6 +37,99 @@ python run.py
 ```
 
 The server will be available at `http://localhost:8000` by default.
+
+## Claude MCP Configuration
+
+To use this server with Claude, add the following to your Claude MCP configuration file:
+
+```json
+{
+  "tools": [
+    {
+      "name": "leantime_list_projects",
+      "description": "Lists all available projects in Leantime",
+      "provider": {
+        "type": "http",
+        "url": "http://localhost:8000/tools/list_projects",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyTemplate": {
+          "name": "list_projects",
+          "input": "{{{parameters}}}"
+        },
+        "responseSchema": {
+          "type": "object",
+          "properties": {
+            "output": {
+              "type": "object",
+              "properties": {
+                "projects": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "name": { "type": "string" },
+                      "description": { "type": ["string", "null"] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "leantime_create_task",
+      "description": "Creates a new task in Leantime",
+      "provider": {
+        "type": "http",
+        "url": "http://localhost:8000/tools/create_task",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "bodyTemplate": {
+          "name": "create_task",
+          "input": "{{{parameters}}}"
+        }
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the task"
+          },
+          "projectId": {
+            "type": "integer",
+            "description": "ID of the project"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the task"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the task"
+          }
+        },
+        "required": ["title", "projectId"]
+      }
+    }
+  ]
+}
+```
+
+You can add more tools following the same pattern for any of the available tools listed below. Make sure to update the URL if you're not running the server on the default port or if it's on a different machine.
 
 ## API Endpoints
 
